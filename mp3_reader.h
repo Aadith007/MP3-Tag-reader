@@ -1,21 +1,14 @@
-#ifndef TYPES_H
-#define TYPES_H
 
-#include<stdio.h>
+#ifndef MP3_READER_H
+#define MP3_READER_H
 
-typedef unsigned int uint;
+#include "types.h"
 
-typedef enum
-{
-    e_success,
-    e_failure
-} Status;
+Status read_and_validate_args(int argc, char *argv[], mp3info *mp3Info);
 
-typedef struct{
-    char *mp3_fname;
-    FILE *fptr_mp3;
 
-}mp3info;
+Status view_meta_data(mp3info *mp3Info);
+
+OperationType check_operation_type(char *opt);
 
 #endif
-

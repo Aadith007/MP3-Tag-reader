@@ -17,5 +17,13 @@ typedef struct{
 
 }mp3info;
 
+
+typedef enum
+{
+    mp3_view,
+    mp3_edit,
+    e_unsupported
+} OperationType;
+
 #endif
 
