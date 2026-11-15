@@ -44,33 +44,37 @@
         printf("Invalid version\n");
         return e_failure;
     }
+    if(fseek(mp3Info->fptr_mp3, 10, SEEK_SET) != 0)
+    {
+    printf("Error: Failed to seek file\n");
+    return e_failure;
+    }
 
     // while loop start//
 
     while(1){
 
-        if(mp3Info->fptr_mp3==-1){
-            break;
-        }
+       char frame_ID[5];
 /// frame header start
-   if(fseek(mp3Info->fptr_mp3, 10, SEEK_SET) != 0)
-    {
-    printf("Error: Failed to seek file\n");
-    return e_failure;
+if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
+      
+        break;
     }
-    char frame_ID[5];
-    if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
-        printf("Error:Failed to read tag name\n");
-        return e_failure;
-    }
+   
+    
+    // if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
+    //     printf("Error:Failed to read tag name\n");
+    //     return e_failure;
+    // }
     frame_ID[4]='\0';
-    printf("Frame ID: %s\n", frame_ID);
+   // printf("Frame ID: %s\n", frame_ID);
 
     unsigned char size_buff[4];
     if(fread(size_buff,4,1,mp3Info->fptr_mp3)!=1){
         printf("Error: Failed to read tag size\n");
         return e_failure;
     }
+
 
     unsigned char temp;
     temp=size_buff[0];
@@ -84,12 +88,19 @@
     unsigned int frame_size;
 
     frame_size = ((unsigned int)size_buff[3] << 24) | ((unsigned int)size_buff[2] << 16) |((unsigned int)size_buff[1] << 8) |(unsigned int)size_buff[0];
-    printf(" Frame size: %u\n",frame_size);
+   // printf(" Frame size: %u\n",frame_size);
 
     if(fseek(mp3Info->fptr_mp3,2,SEEK_CUR)!=0){
         printf("Error: Failed to seek file\n");
         return e_failure;
     } ///skip 2 bytes of flag
+
+    if(strcmp(frame_ID, "TIT2") == 0 ||
+   strcmp(frame_ID, "TPE1") == 0 ||
+   strcmp(frame_ID, "TALB") == 0 ||
+   strcmp(frame_ID, "TYER") == 0 ||
+   strcmp(frame_ID, "TCON") == 0 ||
+   strcmp(frame_ID, "TCOM") == 0){
 
     unsigned char encoding;
 
@@ -98,7 +109,7 @@
     return e_failure;
     
 }
-    printf("Encoding: %u\n", encoding);
+   // printf("Encoding: %u\n", encoding);
     if(frame_size<1){
         printf("Invalid frame size\n");
         return e_failure;
@@ -123,50 +134,41 @@
 
 
     if(strcmp(frame_ID,"TIT2")==0){
-        printf("Title : %s\n",data);
+        printf("%s : %s\n",frame_ID,data);
        
     }
     else if(strcmp(frame_ID,"TPE1")==0){
-        printf("Artist: %s\n",data);
+        printf("%s:  %s\n",frame_ID,data);
     }
     else if(strcmp(frame_ID,"TALB")==0){
-        printf("Album: %s\n",data);
+        printf("%s: %s\n",frame_ID,data);
     }
     else if(strcmp(frame_ID,"TYER")==0){
-        printf("Year: %s\n",data);
+        printf("%s: %s\n",frame_ID,data);
     }
+
+    
     
      else if(strcmp(frame_ID,"TCON")==0){
-        printf("Content type: %s\n",data);
+        printf("%s: %s\n",frame_ID,data);
+
+      
     }
 
      else if(strcmp(frame_ID,"TCOM")==0){
-        printf("Composer: %s\n",data);
+        printf("%s: %s\n",frame_ID,data);
     }
-     free(data);
-
+      free(data);
+     
+}
+else{
+    fseek(mp3Info->fptr_mp3,frame_size,SEEK_CUR);
 }
 
 
-    return e_success; 
-    fclose(mp3Info->fptr_mp3);
-
-
+}
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    fclose(mp3Info->fptr_mp3);
+      return e_success; 
+    
 }
