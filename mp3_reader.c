@@ -75,20 +75,23 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
         return e_failure;
     }
 
+    int frame_size=endian_to_lower(size_buff);
 
-    unsigned char temp;
-    temp=size_buff[0];
-    size_buff[0]=size_buff[3];
-    size_buff[3]=temp;
 
-    temp = size_buff[1];
-    size_buff[1] = size_buff[2];
-    size_buff[2] = temp;
 
-    unsigned int frame_size;
+//     unsigned char temp;
+//     temp=size_buff[0];
+//     size_buff[0]=size_buff[3];
+//     size_buff[3]=temp;
 
-    frame_size = ((unsigned int)size_buff[3] << 24) | ((unsigned int)size_buff[2] << 16) |((unsigned int)size_buff[1] << 8) |(unsigned int)size_buff[0];
-   // printf(" Frame size: %u\n",frame_size);
+//     temp = size_buff[1];
+//     size_buff[1] = size_buff[2]; 
+//     size_buff[2] = temp;
+
+//     unsigned int frame_size;
+
+//     frame_size = ((unsigned int)size_buff[3] << 24) | ((unsigned int)size_buff[2] << 16) |((unsigned int)size_buff[1] << 8) |(unsigned int)size_buff[0];
+//    // printf(" Frame size: %u\n",frame_size);
 
     if(fseek(mp3Info->fptr_mp3,2,SEEK_CUR)!=0){
         printf("Error: Failed to seek file\n");
@@ -167,8 +170,25 @@ else{
 
 
 }
+
     
     fclose(mp3Info->fptr_mp3);
       return e_success; 
     
+}
+
+unsigned int endian_to_lower(unsigned char *size_buff){
+    unsigned char temp;
+    temp=size_buff[0];
+    size_buff[0]=size_buff[3];
+    size_buff[3]=temp;
+
+    temp = size_buff[1];
+    size_buff[1] = size_buff[2]; 
+    size_buff[2] = temp;
+
+    unsigned int frame_size;
+
+    frame_size = ((unsigned int)size_buff[3] << 24) | ((unsigned int)size_buff[2] << 16) |((unsigned int)size_buff[1] << 8) |(unsigned int)size_buff[0];
+    return frame_size;
 }
