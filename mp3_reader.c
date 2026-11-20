@@ -4,6 +4,7 @@
 #include<string.h>
 #include<stdlib.h>
 
+
  Status read_and_validate_args(int argc,char *argv[],mp3info *mp3Info){
     if(argc!=3){
         printf("Invalid input format\n");
@@ -31,6 +32,9 @@
  Status view_meta_data(mp3info *mp3Info)
 {
     printf("View operation started\n");
+
+    char frame_id[6][5]={"TIT2","TPE1","TALB","TYER","TCON","TCOM"};
+    char tag_names[6][10] = {"Title", "Artist", "Album", "Year", "Genre", "Composer"};
     char buff[10];
     if(fread(buff,10,1,mp3Info->fptr_mp3)!=1){
         printf("Error: Incomplete header file\n");
@@ -44,6 +48,9 @@
         printf("Invalid version\n");
         return e_failure;
     }
+  printf("-------------------------------------\n");
+    printf("ID3 Version: ID3v2.%d.%d\n", buff[3], buff[4]);
+    printf("-------------------------------------\n");
     if(fseek(mp3Info->fptr_mp3, 10, SEEK_SET) != 0)
     {
     printf("Error: Failed to seek file\n");
@@ -61,13 +68,9 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
         break;
     }
    
-    
-    // if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
-    //     printf("Error:Failed to read tag name\n");
-    //     return e_failure;
-    // }
+  
     frame_ID[4]='\0';
-   // printf("Frame ID: %s\n", frame_ID);
+  
 
     unsigned char size_buff[4];
     if(fread(size_buff,4,1,mp3Info->fptr_mp3)!=1){
@@ -79,19 +82,6 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
 
 
 
-//     unsigned char temp;
-//     temp=size_buff[0];
-//     size_buff[0]=size_buff[3];
-//     size_buff[3]=temp;
-
-//     temp = size_buff[1];
-//     size_buff[1] = size_buff[2]; 
-//     size_buff[2] = temp;
-
-//     unsigned int frame_size;
-
-//     frame_size = ((unsigned int)size_buff[3] << 24) | ((unsigned int)size_buff[2] << 16) |((unsigned int)size_buff[1] << 8) |(unsigned int)size_buff[0];
-//    // printf(" Frame size: %u\n",frame_size);
 
     if(fseek(mp3Info->fptr_mp3,2,SEEK_CUR)!=0){
         printf("Error: Failed to seek file\n");
@@ -135,32 +125,44 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
     data[text_size]='\0';
 
 
-
-    if(strcmp(frame_ID,"TIT2")==0){
-        printf("%s : %s\n",frame_ID,data);
+    for(int i=0;i<6;i++){
+        if(strcmp(frame_ID,frame_id[i])==0){
+            printf("%s: %s\n",tag_names[i],data);
+            break;
+        }
+    }
+    // if(strcmp(frame_ID,"TIT2")==0){
+    //     printf("%s : %s\n",frame_ID,data);
+    //     printf("Frame ID: %s\n", frame_ID);
        
-    }
-    else if(strcmp(frame_ID,"TPE1")==0){
-        printf("%s:  %s\n",frame_ID,data);
-    }
-    else if(strcmp(frame_ID,"TALB")==0){
-        printf("%s: %s\n",frame_ID,data);
-    }
-    else if(strcmp(frame_ID,"TYER")==0){
-        printf("%s: %s\n",frame_ID,data);
-    }
+    // }
+    // else if(strcmp(frame_ID,"TPE1")==0){
+    //     printf("%s:  %s\n",frame_ID,data);
+    //     printf("Frame ID: %s\n", frame_ID);
+    // }
+    // else if(strcmp(frame_ID,"TALB")==0){
+    //     printf("%s: %s\n",frame_ID,data);
+    //     printf("Frame ID: %s\n", frame_ID);
+    // }
+    // else if(strcmp(frame_ID,"TYER")==0){
+    //     printf("%s: %s\n",frame_ID,data);
+    //     printf("Frame ID: %s\n", frame_ID);
+    // }
 
     
     
-     else if(strcmp(frame_ID,"TCON")==0){
-        printf("%s: %s\n",frame_ID,data);
+    //  else if(strcmp(frame_ID,"TCON")==0){
+    //     printf("%s: %s\n",frame_ID,data);
+    //     printf("Frame ID: %s\n", frame_ID);
 
       
-    }
+    // }
 
-     else if(strcmp(frame_ID,"TCOM")==0){
-        printf("%s: %s\n",frame_ID,data);
-    }
+    //  else if(strcmp(frame_ID,"TCOM")==0){
+    //     printf("%s: %s\n",frame_ID,data);
+    //     printf("Frame ID: %s\n", frame_ID);
+    // }
+    printf("-------------------------------------\n");
       free(data);
      
 }
