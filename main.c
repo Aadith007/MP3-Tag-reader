@@ -34,22 +34,36 @@ int main(int argc, char *argv[])
         
             printf(" Argument validation failed\n");
             return 1; 
-              }
         }
-        else
-        {
+            
+    }
+    else if(op == mp3_edit){
+        if(read_and_validate_edit_args(argc,argv,&mp3Info)==e_success){
+            if(edit_meta_data(&mp3Info)==e_failure){
+                printf("Meta data edit operation failed\n");
+                return 1;
+            }
+        }
+        else{
             printf("Argument validation failed\n");
             return 1;
         }
-    
-    // else
-    // {
-    //     printf("Unsupported operation\n");
-    //     return 1;
-    // }
+
+    }
+
+    else{
+        printf("Unsopperted operation\n");
+        return 0;
+
+    }
+
 
     return 0;
 }
+    
+  
+
+
 
 OperationType check_operation_type(char opt){
     if(opt=='v')

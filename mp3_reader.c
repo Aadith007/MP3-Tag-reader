@@ -44,6 +44,9 @@
         printf("Error: Header mismatch\n");
         return e_failure;
     }
+     printf("Major version: %u\n", (unsigned char)buff[3]);
+printf("Revision: %u\n", (unsigned char)buff[4]);
+
     if(buff[3]!=3 || buff[4]!=0){
         printf("Invalid version\n");
         return e_failure;
@@ -81,6 +84,8 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
         printf("Error: Failed to read tag size\n");
         return e_failure;
     }
+    
+
 
     int frame_size=endian_to_lower(size_buff);
 
@@ -121,8 +126,7 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
         printf("Error: Memory allocation failed\n");
         return e_failure;
     }  
-
-
+   
     if(fread(data,text_size,1,mp3Info->fptr_mp3)!=1){
         printf("Error: Failed to read meta data\n");
         free(data);
