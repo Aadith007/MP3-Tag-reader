@@ -44,8 +44,6 @@
         printf("Error: Header mismatch\n");
         return e_failure;
     }
-     printf("Major version: %u\n", (unsigned char)buff[3]);
-printf("Revision: %u\n", (unsigned char)buff[4]);
 
     if(buff[3]!=3 || buff[4]!=0){
         printf("Invalid version\n");

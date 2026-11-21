@@ -15,6 +15,9 @@ typedef enum
 typedef struct{
     char *mp3_fname;
     FILE *fptr_mp3;
+    FILE *fptr_temp;
+    char *edit_option;
+    char *new_data; 
 
 }mp3info;
 
