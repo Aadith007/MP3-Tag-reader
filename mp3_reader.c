@@ -31,7 +31,7 @@
  }
  Status view_meta_data(mp3info *mp3Info)
 {
-    printf("View operation started\n");
+    printf("-------------VIEW MODE--------------\n");
 
     char frame_id[6][5]={"TIT2","TPE1","TALB","TYER","TCON","TCOM"};
     char tag_names[6][10] = {"Title", "Artist", "Album", "Year", "Genre", "Composer"};
@@ -48,6 +48,7 @@
         printf("Invalid version\n");
         return e_failure;
     }
+
   printf("-------------------------------------\n");
     printf("ID3 Version: ID3v2.%d.%d\n", buff[3], buff[4]);
     printf("-------------------------------------\n");
@@ -70,6 +71,9 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
    
   
     frame_ID[4]='\0';
+    if(frame_ID[0]=='\0'){
+        break;
+    }
   
 
     unsigned char size_buff[4];
@@ -88,13 +92,15 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
         return e_failure;
     } ///skip 2 bytes of flag
 
-    if(strcmp(frame_ID, "TIT2") == 0 ||
-   strcmp(frame_ID, "TPE1") == 0 ||
-   strcmp(frame_ID, "TALB") == 0 ||
-   strcmp(frame_ID, "TYER") == 0 ||
-   strcmp(frame_ID, "TCON") == 0 ||
-   strcmp(frame_ID, "TCOM") == 0){
 
+    int found=0;
+
+    for(int i=0;i<6;i++){
+        if(strcmp(frame_ID,frame_id[i])==0){
+            found=1;
+
+
+            
     unsigned char encoding;
 
     if(fread(&encoding, 1, 1, mp3Info->fptr_mp3) != 1){
@@ -124,51 +130,22 @@ if(fread(frame_ID,4,1,mp3Info->fptr_mp3)!=1){
     }
     data[text_size]='\0';
 
-
-    for(int i=0;i<6;i++){
-        if(strcmp(frame_ID,frame_id[i])==0){
             printf("%s: %s\n",tag_names[i],data);
+            
+        free(data);
             break;
         }
     }
-    // if(strcmp(frame_ID,"TIT2")==0){
-    //     printf("%s : %s\n",frame_ID,data);
-    //     printf("Frame ID: %s\n", frame_ID);
-       
-    // }
-    // else if(strcmp(frame_ID,"TPE1")==0){
-    //     printf("%s:  %s\n",frame_ID,data);
-    //     printf("Frame ID: %s\n", frame_ID);
-    // }
-    // else if(strcmp(frame_ID,"TALB")==0){
-    //     printf("%s: %s\n",frame_ID,data);
-    //     printf("Frame ID: %s\n", frame_ID);
-    // }
-    // else if(strcmp(frame_ID,"TYER")==0){
-    //     printf("%s: %s\n",frame_ID,data);
-    //     printf("Frame ID: %s\n", frame_ID);
-    // }
-
+   if(found == 0){
+    if(fseek(mp3Info->fptr_mp3, frame_size, SEEK_CUR) != 0)
+    {
+        printf("Error: Failed to skip frame\n");
+        return e_failure;
+    }
+}
     
-    
-    //  else if(strcmp(frame_ID,"TCON")==0){
-    //     printf("%s: %s\n",frame_ID,data);
-    //     printf("Frame ID: %s\n", frame_ID);
-
-      
-    // }
-
-    //  else if(strcmp(frame_ID,"TCOM")==0){
-    //     printf("%s: %s\n",frame_ID,data);
-    //     printf("Frame ID: %s\n", frame_ID);
-    // }
-    printf("-------------------------------------\n");
-      free(data);
      
-}
-else{
-    fseek(mp3Info->fptr_mp3,frame_size,SEEK_CUR);
-}
+
 
 
 }
